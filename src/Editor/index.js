@@ -101,7 +101,7 @@ export class Editor extends React.Component {
       isTrackingStarted: false
     });
     setTimeout(() => {
-      this.input.clear();
+      this.input && this.input.clear && this.input.clear();
     }, 250);
   }
 
