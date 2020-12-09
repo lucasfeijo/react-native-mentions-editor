@@ -60,7 +60,7 @@ export class Editor extends React.Component {
       },
       menIndex: 0,
       showMentions: false,
-      editorHeight: undefined,
+      editorHeight: 45,
       scrollContentInset: { top: 0, bottom: 0, left: 0, right: 0 },
       placeholder: props.placeholder || "Type something..."
     };
@@ -101,7 +101,7 @@ export class Editor extends React.Component {
       isTrackingStarted: false
     });
     setTimeout(() => {
-      this.input && this.input.clear && this.input.clear();
+      this.input.clear();
     }, 250);
   }
 
@@ -339,7 +339,7 @@ export class Editor extends React.Component {
   };
 
   formatMentionNode = (txt, key) => (
-    <Text key={key} style={styles.mention}>
+    <Text key={key} style={[styles.mention, this.props.editorStyles?.mention]}>
       {txt}
     </Text>
   );
@@ -508,19 +508,6 @@ export class Editor extends React.Component {
     this.sendMessageToFooter(text);
   };
 
-  onContentSizeChange = evt => {
-    /**
-     * this function will dynamically
-     * calculate editor height w.r.t
-     * the size of text in the input.
-     */
-    if (!evt) return
-    const delta = Platform.select({ android: 20.5, default: 0 })
-    this.setState({
-      editorHeight: evt.nativeEvent.layout.height - delta
-    });
-  };
-
   render() {
     const { props, state } = this;
     const { editorStyles = {} } = props;
@@ -534,7 +521,7 @@ export class Editor extends React.Component {
     };
 
     return (
-      <View styles={editorStyles.mainContainer}>
+      <>
         {props.renderMentionList ? (
           props.renderMentionList(mentionListProps)
         ) : (
@@ -546,7 +533,7 @@ export class Editor extends React.Component {
               editorStyles={editorStyles}
             />
           )}
-        <View style={[styles.container, editorStyles.mainContainer]}>
+        <View style={[styles.mainContainer, editorStyles.mainContainer]}>
           <ScrollView
             ref={scroll => {
               this.scroll = scroll;
@@ -554,54 +541,28 @@ export class Editor extends React.Component {
             onContentSizeChange={() => {
               this.scroll.scrollToEnd({ animated: true });
             }}
-            style={[styles.editorContainer, editorStyles.editorContainer]}
           >
-            <View style={[{ height: state.editorHeight || 'auto' }]}>
-              <View
-                style={[
-                  styles.formmatedTextWrapper,
-                  editorStyles.inputMaskTextWrapper
-                ]}
-              >
-                {state.formattedText !== "" ? (
-                  <Text
-                    style={[styles.formmatedText, editorStyles.inputMaskText]}
-                  >
-                    {state.formattedText}
-                  </Text>
-                ) : (
-                    <Text
-                      style={[
-                        styles.placeholderText,
-                        editorStyles.placeholderText
-                      ]}
-                    >
-                      {state.placeholder}
-                    </Text>
-                  )}
-              </View>
-              <TextInput
-                ref={input => (this.input = input)}
-                style={[styles.input, editorStyles.input]}
-                onLayout={this.onContentSizeChange}
-                multiline
-                autoFocus={props.autoFocus}
-                numberOfLines={100}
-                name={"message"}
-                value={state.inputText}
-                onBlur={props.toggleEditor}
-                onChangeText={this.onChange}
-                selection={this.state.selection}
-                selectionColor={"#000"}
-                onSelectionChange={this.handleSelectionChange}
-                placeholder={state.placeholder}
-                scrollEnabled={false}
-                keyboardType={props.keyboardType}
-              />
-            </View>
+            <TextInput
+              ref={input => (this.input = input)}
+              style={[styles.input, editorStyles.input]}
+              multiline={true}
+              blurOnSubmit={false}
+              autoFocus={props.autoFocus}
+              name={"message"}
+              onBlur={props.toggleEditor}
+              onChangeText={this.onChange}
+              selection={this.state.selection}
+              selectionColor={"#000"}
+              onSelectionChange={this.handleSelectionChange}
+              placeholder={state.placeholder}
+              scrollEnabled={false}
+              keyboardType={props.keyboardType}
+            >
+              {state.formattedText}
+            </TextInput>
           </ScrollView>
         </View>
-      </View>
+      </>
     );
   }
 }
