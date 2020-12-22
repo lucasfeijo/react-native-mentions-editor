@@ -551,8 +551,7 @@ export class Editor extends React.Component {
               name={"message"}
               onBlur={props.toggleEditor}
               onChangeText={this.onChange}
-              selection={this.state.selection}
-              selectionColor={"rgba(0, 0, 0, 0.4)"}
+              selectionColor={"rgba(0, 0, 0, 0.25)"}
               onSelectionChange={this.handleSelectionChange}
               placeholder={state.placeholder}
               scrollEnabled={false}
